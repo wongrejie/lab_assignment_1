@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:ndialog/ndialog.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 void main() => runApp(const MyApp());
 
@@ -39,15 +41,6 @@ class _HomePageState extends State<HomePage> {
       desc = "";
   final RoundedLoadingButtonController _btnController =
       RoundedLoadingButtonController();
-
-  void _buttonLoading() async {
-    Timer(const Duration(seconds: 2), () {
-      _btnController.success();
-    });
-    Timer(const Duration(seconds: 3), () {
-      _btnController.reset();
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +99,6 @@ class _HomePageState extends State<HomePage> {
       child: const Text("Confirm"),
       onPressed: () {
         Navigator.pop(context);
-        _buttonLoading();
         _getMovie();
       },
     );
@@ -131,6 +123,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _getMovie() async {
+    _btnController.start();
+    ProgressDialog progressDialog = ProgressDialog(context,
+        message: const Text("Progress"),
+        title: const Text("Searching for your movie..."));
+    progressDialog.show();
     String search = textSearch.text;
     var apikey = "b51cd3c0";
     var url = Uri.parse('https://www.omdbapi.com/?t=$search&apikey=$apikey');
@@ -139,14 +136,28 @@ class _HomePageState extends State<HomePage> {
     if (rescode == 200) {
       var jsonData = response.body;
       var parsedJson = json.decode(jsonData);
+
+      movieTitle = parsedJson['Title'];
+      year = parsedJson['Year'];
+      genre = parsedJson['Genre'];
+      imageUrl = parsedJson['Poster'];
       setState(() {
-        movieTitle = parsedJson['Title'];
-        year = parsedJson['Year'];
-        genre = parsedJson['Genre'];
-        imageUrl = parsedJson['Poster'];
         desc =
             "Movie Title:  $movieTitle\n\n Year:  $year\n\n Genre:  $genre \n";
+        _btnController.success();
+      });
+      Fluttertoast.showToast(
+          msg: "Movie Found!",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          fontSize: 16,
+          timeInSecForIosWeb: 1);
+    } else {
+      setState(() {
+        desc = "No record was found.";
       });
     }
+    _btnController.reset();
+    progressDialog.dismiss();
   }
 }
