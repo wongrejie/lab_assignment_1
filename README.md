@@ -1,6 +1,10 @@
 # lab_assignment_1
 
-A new Flutter project.
+Develop a simple application that can search and extract movie information using API from
+https://www.omdbapi.com/. Request for an API key from the following URL
+https://www.omdbapi.com/apikey.aspx. Once registered test your API and the request should return
+a JSON data response. Based on the response build an application that allows users to search and
+display the movie data.
 
 ## Getting Started
 
