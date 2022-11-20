@@ -151,7 +151,7 @@ class _HomePageState extends State<HomePage> {
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
           fontSize: 16,
-          timeInSecForIosWeb: 1);
+          timeInSecForIosWeb: 2);
     } else {
       setState(() {
         desc = "No record was found.";
